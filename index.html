@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>节点选择 · 博客加速</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     奢侈科技风 · 博客加速网关
+     ============================================================ */
+  :root{
+    --bg:#0c0c10;
+    --bg-soft:#14141a;
+    --card:rgba(255,255,255,0.035);
+    --card-hover:rgba(255,255,255,0.06);
+    --border:rgba(255,255,255,0.09);
+    --border-strong:rgba(255,255,255,0.16);
+    --text:#f4f5f8;
+    --muted:#9aa0b3;
+    --faint:#64697c;
+    --accent:#8fa7ff;        /* 低饱和柔蓝 */
+    --accent-2:#b9a6ff;      /* 低饱和柔紫 */
+    --green:#4ade80;
+    --amber:#f6c177;
+    --red:#ff8794;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,'PingFang SC',sans-serif;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:56px 24px;position:relative;overflow-x:hidden;
+    background:
+      radial-gradient(1100px 640px at 18% -8%, rgba(143,167,255,0.10), transparent 55%),
+      radial-gradient(900px 620px at 104% 112%, rgba(185,166,255,0.10), transparent 50%),
+      radial-gradient(720px 420px at 85% -5%, rgba(74,222,128,0.05), transparent 60%),
+      linear-gradient(168deg, var(--bg) 0%, var(--bg-soft) 100%);
+  }
+  /* 极细噪点，增加景深 */
+  body::after{
+    content:'';position:fixed;inset:-50%;pointer-events:none;opacity:.5;z-index:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative;z-index:1;width:100%;max-width:940px}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- 头部 ---------- */
+  header{text-align:center;margin-bottom:44px}
+  .brand{
+    width:58px;height:58px;border-radius:18px;margin:0 auto 22px;
+    display:flex;align-items:center;justify-content:center;position:relative;
+    background:linear-gradient(150deg, rgba(255,255,255,0.12), rgba(255,255,255,0.02) 55%);
+    border:1px solid var(--border-strong);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.14), 0 18px 46px -18px rgba(143,167,255,0.45);
+  }
+  .brand svg{width:26px;height:26px;color:var(--accent);filter:drop-shadow(0 0 12px rgba(143,167,255,0.5))}
+  .brand::before{content:'';position:absolute;inset:-1px;border-radius:18px;padding:1px;
+    background:linear-gradient(145deg, rgba(143,167,255,0.6), transparent 45%, rgba(185,166,255,0.5));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  h1{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,5vw,42px);
+    letter-spacing:-0.03em;line-height:1.08;
+  }
+  .sub{color:var(--muted);margin-top:14px;font-size:clamp(13.5px,2vw,15px);line-height:1.7;max-width:480px;margin-inline:auto;font-weight:400}
+
+  /* ---------- 状态栏 ---------- */
+  .statusbar{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    margin-bottom:28px;padding:14px 20px;border-radius:16px;
+    background:var(--card);border:1px solid var(--border);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    font-size:14px;color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .spin{
+    width:17px;height:17px;flex-shrink:0;position:relative;
+  }
+  .spin::before{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    border:2px solid var(--border-strong);border-top-color:var(--accent);
+    animation:sp 1s linear infinite;
+  }
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* 等待倒计时：醒目大字 + 呼吸光晕 */
+  .cd{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;line-height:1;
+      color:var(--accent);min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums;
+      text-shadow:0 0 26px rgba(143,167,255,0.6);animation:cdp 1s var(--ease) infinite}
+  @keyframes cdp{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* ---------- 卡片网格 ---------- */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px}
+  .card{
+    padding:22px;border-radius:18px;background:var(--card);
+    border:1px solid var(--border);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    cursor:pointer;position:relative;overflow:hidden;
+    transition:transform .35s var(--ease),border-color .45s var(--ease),box-shadow .45s var(--ease);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.045);
+  }
+  .card:not(.locked):hover{transform:translateY(-3px);border-color:var(--border-strong);
+    background:var(--card-hover);box-shadow:0 22px 50px -24px rgba(0,0,0,0.7)}
+  .card.winner{
+    border-color:rgba(74,222,128,0.5);
+    box-shadow:0 0 0 1px rgba(74,222,128,0.22),0 26px 60px -26px rgba(74,222,128,0.35);
+    background:linear-gradient(160deg, rgba(74,222,128,0.08), rgba(255,255,255,0.02) 55%);
+  }
+  .card.error{border-color:rgba(255,135,148,0.4)}
+  .card .top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+  .name{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:16px;letter-spacing:-0.01em}
+  /* 品牌 logo 徽章：品牌色渐变 + 白色 mark */
+  .logo-chip{
+    width:26px;height:26px;border-radius:8px;flex-shrink:0;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;position:relative;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 12px -4px rgba(0,0,0,0.6);
+  }
+  .logo-chip svg{width:15px;height:15px}
+  .logo-chip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .lc-vercel{background:linear-gradient(135deg,#c9cdd4,#f4f6f9)}
+  .lc-vercel svg{width:13px;height:13px}
+  .lc-netlify{background:linear-gradient(135deg,#0fa47f,#18d59c)}
+  .lc-cloudflare{background:linear-gradient(135deg,#f4762e,#faac3c)}
+  .lc-edgeone{background:linear-gradient(135deg,#03a2d8,#3ecaff)}
+  .badge{
+    font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#c9d1ff;
+    padding:3px 9px;border-radius:999px;
+    background:linear-gradient(135deg, rgba(143,167,255,0.16), rgba(185,166,255,0.12));
+    border:1px solid rgba(143,167,255,0.22);
+  }
+  .node-arrow{
+    width:15px;height:15px;color:#4a5063;flex-shrink:0;
+    transition:transform .35s var(--ease),color .35s var(--ease);
+  }
+  .card:not(.locked):hover .node-arrow{color:var(--muted);transform:translate(2px,-2px)}
+  .desc{color:var(--faint);font-size:11.5px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;user-select:none}
+  .lat-row{display:flex;align-items:baseline;justify-content:space-between;margin-top:18px}
+  .lat{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;letter-spacing:-0.02em;
+    font-variant-numeric:tabular-nums;line-height:1;display:flex;align-items:baseline;gap:4px}
+  .lat .unit{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:500;color:var(--faint)}
+  .state{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--amber)}
+  .state svg{width:14px;height:14px}
+  .state.ok{color:var(--green)}
+  .state.fail{color:var(--red)}
+  .meter{height:5px;border-radius:999px;background:rgba(255,255,255,0.07);margin-top:14px;overflow:hidden}
+  .meter i{display:block;height:100%;width:0;border-radius:999px;transition:width .6s var(--ease);
+    background:linear-gradient(90deg,var(--accent),var(--green))}
+  .card.error .meter i{background:linear-gradient(90deg,#464a5a,var(--red))}
+
+  /* ---------- 底部 ---------- */
+  .note{text-align:center;color:var(--faint);font-size:13px;line-height:1.8;margin-bottom:22px;font-weight:400}
+  .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;
+    padding:13px 26px;border-radius:999px;border:1px solid var(--border-strong);cursor:pointer;
+    background:rgba(255,255,255,0.04);color:var(--text);font-size:14px;font-weight:500;
+    letter-spacing:0.01em;transition:transform .3s var(--ease),background .3s,box-shadow .3s,border-color .3s;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  .btn svg{width:17px;height:17px}
+  .btn:hover{transform:scale(1.03);background:rgba(255,255,255,0.07);border-color:var(--border-strong);
+    box-shadow:0 14px 34px -16px rgba(0,0,0,0.7)}
+  .btn.primary{
+    background:linear-gradient(135deg,#8fa7ff,#b9a6ff);
+    border:none;font-weight:600;color:#0c0c10;
+    box-shadow:0 18px 44px -16px rgba(143,167,255,0.55), inset 0 1px 0 rgba(255,255,255,0.45);
+  }
+  .btn.primary:hover{box-shadow:0 24px 54px -18px rgba(143,167,255,0.7), inset 0 1px 0 rgba(255,255,255,0.5)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  @media(max-width:640px){
+    body{padding:40px 18px}
+    .grid{grid-template-columns:1fr;gap:12px}
+    .actions{flex-direction:column}
+    .btn{width:100%;justify-content:center}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1.5"/><rect x="2" y="16" width="6" height="6" rx="1.5"/><rect x="9" y="2" width="6" height="6" rx="1.5"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+    </div>
+    <h1>选择最优节点</h1>
+    <p class="sub">正在探测各平台在你的本地网络下的真实延迟，自动为你选出一条最快的线路。</p>
+  </header>
+
+  <div class="statusbar" id="statusbar">
+    <span class="spin" id="spinner"></span>
+    <span id="statusText">正在测速…</span>
+    <span class="cd" id="cdNum" style="display:none">3</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="note">测速结果会缓存，下次访问将直接进入最优节点，无需等待。</p>
+  <div class="actions">
+    <button class="btn primary" onclick="runTest(true)" id="reTestBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M21 21v-5h-5"/></svg>
+      <span>重新测速</span>
+    </button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ===== 节点配置（按需增删）=====
+// url   : 该平台的博客地址（用于探测 + 最终跳转）
+// name  : 显示名称
+// tag   : 平台标签
+const NODES = [
+  { url: "https://vercel.blog.646474.xyz/",    name: "Vercel",     tag: "Vercel" },
+  { url: "https://netlify.blog.646474.xyz/",   name: "Netlify",    tag: "Netlify" },
+  { url: "https://cf.blog.646474.xyz/",        name: "Cloudflare", tag: "CF" },
+  { url: "https://eo.blog.646474.xyz/",        name: "EdgeOne",    tag: "EdgeOne" },
+];
+
+const ICONS = {
+  ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  fail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+  arrow:'<svg class="node-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>'
+};
+
+// 各平台官方 logo（fill 用白色，承载于品牌色徽章）
+function logoChip(name){
+  const map = {
+    Vercel:'<svg viewBox="0 0 24 24" fill="#0a0a0a" aria-hidden="true"><path d="m12 1.608 12 20.784H0Z"/></svg>',
+    Netlify:'<svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M6.49 19.04h-.23L5.13 17.9v-.23l1.73-1.71h1.2l.15.15v1.2L6.5 19.04ZM5.13 6.31V6.1l1.13-1.13h.23L8.2 6.68v1.2l-.15.15h-1.2L5.13 6.31Zm9.96 9.09h-1.65l-.14-.13v-3.83c0-.68-.27-1.2-1.1-1.23-.42 0-.9 0-1.43.02l-.07.08v4.96l-.14.14H8.9l-.13-.14V8.73l.13-.14h3.7a2.6 2.6 0 0 1 2.61 2.6v4.08l-.13.14Zm-8.37-2.44H.14L0 12.82v-1.64l.14-.14h6.58l.14.14v1.64l-.14.14Zm17.14 0h-6.58l-.14-.14v-1.64l.14-.14h6.58l.14.14v1.64l-.14.14ZM11.05 6.55V1.64l.14-.14h1.65l.14.14v4.9l-.14.14h-1.65l-.14-.13Zm0 15.81v-4.9l.14-.14h1.65l.14.13v4.91l-.14.14h-1.65l-.14-.14Z"/></svg>',
+    Cloudflare:'<svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727"/></svg>',
+    EdgeOne:'<img src="https://cdn.brandfetch.io/id_Wk8sy9Y/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B" alt="EdgeOne" loading="lazy">'
+  };
+  return '<span class="logo-chip lc-' + name.toLowerCase() + '">' + map[name] + '</span>';
+}
+
+const RACE_TIMEOUT = 1000;      // 任意节点 1 秒未响应即停止测速
+const CACHE_TTL = 10*60*1000;  // 缓存有效期 ms
+const CACHE_KEY = "blog-fastest-node-v1";
+
+const PROBE_URL  = "/favicon.ico";              // 用 favicon 作为探测资源
+const MAX_DELAY  = 2500;                        // 视为不可用/异常的最大延迟 ms
+const AUTO_JUMP_DELAY = 3000;                   // 测速完成后等待自动进入的秒数
+
+let results = {};   // {name: {lat, ok}}
+let locked  = false; // 跳转前的锁定（防止重复）
+
+// ---------- 渲染 ----------
+function renderCards(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  NODES.forEach((node)=>{
+    const c = document.createElement("div");
+    c.className = "card locked";
+    c.id = "card-" + node.name;
+    c.innerHTML =
+      '<div class="top-row">' +
+        '<div class="name">' + logoChip(node.name) + node.name + ' <span class="badge">' + node.tag + '</span></div>' +
+        ICONS.arrow +
+      '</div>' +
+      '<div class="desc">' + node.url + '</div>' +
+      '<div class="lat-row">' +
+        '<div class="lat" id="lat-' + node.name + '">—<span class="unit">ms</span></div>' +
+        '<div class="state" id="state-' + node.name + '">探测中</div>' +
+      '</div>' +
+      '<div class="meter"><i id="meter-' + node.name + '"></i></div>';
+    grid.appendChild(c);
+  });
+}
+
+function setStatus(text, spin=true){
+  document.getElementById("statusText").textContent = text;
+  document.getElementById("spinner").style.display = spin ? "" : "none";
+}
+
+function renderResult(name, ok, lat){
+  const state = document.getElementById("state-" + name);
+  const latEl = document.getElementById("lat-" + name);
+  const meter = document.getElementById("meter-" + name);
+  const card  = document.getElementById("card-" + name);
+  if(ok){
+    latEl.innerHTML = lat.toFixed(0) + '<span class="unit">ms</span>';
+    state.innerHTML = ICONS.ok + '正常';
+    state.className = "state ok";
+    meter.style.width = Math.max(8, Math.min(100, (lat/MAX_DELAY)*100)) + "%";
+  } else {
+    latEl.innerHTML = '—<span class="unit">ms</span>';
+    state.innerHTML = ICONS.fail + '超时';
+    state.className = "state fail";
+    meter.style.width = "0%";
+    card.classList.add("error");
+  }
+}
+
+// ---------- 测速 ----------
+// 用 fetch + no-cors 规避跨域限制：no-cors 无法读取响应内容，但能计时，resolve 即代表资源可联通。
+function probeOnce(url, timeout){
+  return new Promise((resolve)=>{
+    const target = url + PROBE_URL + "?t=" + Date.now() + Math.random();
+    const start = performance.now();
+    const done = ()=>{ resolve({ok:true, lat: performance.now()-start}); };
+    const to = setTimeout(()=>{ resolve({ok:false}); }, timeout);
+    fetch(target, { mode:"no-cors", cache:"no-store", credentials:"omit" })
+      .then(()=>{ clearTimeout(to); done(); })
+      .catch(()=>{ clearTimeout(to); resolve({ok:false}); });
+  });
+}
+
+// 单次探测，受全局 1 秒期限约束；立即渲染结果
+async function testNode(node, deadline){
+  const timeout = Math.max(80, deadline - Date.now());
+  const r = await probeOnce(node.url, timeout);
+  const ok = r.ok && r.lat <= MAX_DELAY;
+  results[node.name] = { ok, lat: ok ? r.lat : Infinity };
+  renderResult(node.name, ok, r.lat);
+  return results[node.name];
+}
+
+// 等待倒计时（醒目）
+let cdTimer = null;
+function startCountdown(seconds){
+  const el = document.getElementById("cdNum");
+  el.style.display = "";
+  let left = seconds;
+  el.textContent = "" + Math.ceil(left);
+  if(cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(()=>{
+    left -= 0.1;
+    if(left <= 0){ clearInterval(cdTimer); cdTimer = null; el.style.display = "none"; return; }
+    el.textContent = "" + Math.ceil(left);
+  }, 100);
+}
+function hideCountdown(){
+  const el = document.getElementById("cdNum");
+  el.style.display = "none";
+  if(cdTimer){ clearInterval(cdTimer); cdTimer = null; }
+}
+
+// ---------- 主流程 ----------
+async function runTest(){
+  locked = false;
+  renderCards();
+  const startBtn = document.getElementById("reTestBtn");
+  startBtn.disabled = true;
+  hideCountdown();
+  setStatus("正在并行测试各节点网络延迟…");
+
+  // 任意节点 1 秒未响应即停止测速（每个探测在期限前必 resolve）
+  const deadline = Date.now() + RACE_TIMEOUT;
+  await Promise.all(NODES.map(n => testNode(n, deadline)));
+
+  const okNodes = NODES.filter(n => results[n.name].ok);
+  if(okNodes.length){
+    okNodes.sort((a,b)=> results[a.name].lat - results[b.name].lat);
+    const fastest = okNodes[0];
+    document.getElementById("card-" + fastest.name).classList.add("winner");
+    document.getElementById("spinner").style.display = "none";
+    setStatus("已选中最优节点：" + fastest.name + "（" + results[fastest.name].lat.toFixed(0) + "ms）", false);
+    saveCache(fastest.name);
+    startCountdown(AUTO_JUMP_DELAY / 1000);
+    setTimeout(()=> jump(fastest), AUTO_JUMP_DELAY);
+  } else {
+    setStatus("所有节点均超时，请检查网络后重试", false);
+  }
+  startBtn.disabled = false;
+  startBtn.onclick = ()=> runTest();
+}
+
+function jump(node){
+  if(locked) return;
+  locked = true;
+  // 保留访问时的路径后缀（如分享链接 /consciousness-China/），跳转到对应平台的文章页
+  var base = node.url.replace(/\/+$/, '');
+  var suffix = (location.pathname && location.pathname !== '/') ? location.pathname : '/';
+  location.replace(base + suffix);
+}
+
+// ---------- 缓存 ----------
+function saveCache(fastName){
+  try{
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ name:fastName, t:Date.now() }));
+  }catch(e){}
+}
+function loadCached(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const d = JSON.parse(raw);
+    if(!d.name || Date.now() - d.t > CACHE_TTL) return null;
+    return d.name;
+  }catch(e){ return null; }
+}
+
+// ---------- 启动 ----------
+renderCards();
+(function init(){
+  const cached    = loadCached();
+  const viaGateway = new URLSearchParams(location.search).get("via");
+  if(cached && !viaGateway){
+    const node = NODES.find(n=>n.name===cached);
+    if(node){
+      setStatus("已为你选用缓存的最优节点 " + node.name + "，正在进入…");
+      setTimeout(()=> jump(node), 500);
+      return;
+    }
+  }
+  runTest();
+})();
+</script>
+</body>
+</html>
