@@ -240,12 +240,12 @@ function brandLogoMark(node){
   return '<span style="font-family:Space Grotesk,sans-serif;font-weight:600;font-size:16px">' + node.name + '</span>';
 }
 
-const RACE_TIMEOUT  = 1000;      // 任意节点 1 秒未响应即停止测速
+const RACE_TIMEOUT  = 2000;      // 任意节点 2 秒未响应即停止测速
 const CACHE_TTL     = 10*60*1000; // 缓存有效期 ms
 const CACHE_KEY     = "blog-fastest-node-v1";
 const PROBE_URL     = "/favicon.ico";  // 用 favicon 作为探测资源
 const MAX_DELAY     = 2500;            // 视为不可用/异常的最大延迟 ms
-const AUTO_JUMP_DELAY = 3000;          // 测速完成后等待自动进入的秒数
+const AUTO_JUMP_DELAY = 5000;          // 测速完成后等待自动进入的秒数
 
 let results   = {};   // {name: {lat, ok}}
 let locked    = false; // 跳转前的锁定（防止重复）
