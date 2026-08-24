@@ -202,13 +202,7 @@
 
   <div class="grid" id="grid"></div>
 
-  <p class="note">测速结果会缓存，下次访问将直接进入最优节点，无需等待。</p>
-  <div class="actions">
-    <button class="btn primary" onclick="runTest(true)" id="reTestBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M21 21v-5h-5"/></svg>
-      <span>重新测速</span>
-    </button>
-  </div>
+  <p class="note" id="bottomNote">测速结果会缓存，下次访问将直接进入最优节点，无需等待。</p>
 </div>
 
 <script>
@@ -252,6 +246,7 @@ const AUTO_JUMP_DELAY = 3000;                   // 测速完成后等待自动�
 
 let results = {};   // {name: {lat, ok}}
 let locked  = false; // 跳转前的锁定（防止重复）
+let retryCount = 0;  // 自动重测次数（最多自动重测一次）
 
 // ---------- 渲染 ----------
 function renderCards(){
@@ -348,10 +343,15 @@ function hideCountdown(){
 async function runTest(){
   locked = false;
   renderCards();
-  const startBtn = document.getElementById("reTestBtn");
-  startBtn.disabled = true;
   hideCountdown();
-  setStatus("正在并行测试各节点网络延迟…");
+  const bottomNote = document.getElementById("bottomNote");
+  bottomNote.textContent = "测速结果会缓存，下次访问将直接进入最优节点，无需等待。";
+
+  if(retryCount === 0){
+    setStatus("正在并行测试各节点网络延迟…");
+  } else {
+    setStatus("所有节点均超时，正在重新测速中…（第 " + retryCount + " 次重试）");
+  }
 
   // 任意节点 1 秒未响应即停止测速（每个探测在期限前必 resolve）
   const deadline = Date.now() + RACE_TIMEOUT;
@@ -367,11 +367,17 @@ async function runTest(){
     saveCache(fastest.name);
     startCountdown(AUTO_JUMP_DELAY / 1000);
     setTimeout(()=> jump(fastest), AUTO_JUMP_DELAY);
+    retryCount = 0;
   } else {
-    setStatus("所有节点均超时，请检查网络后重试", false);
+    if(retryCount < 1){
+      retryCount++;
+      setTimeout(()=> runTest(), 600);
+    } else {
+      setStatus("所有节点均超时，请检查网络连接后刷新页面", false);
+      bottomNote.textContent = "无法连接到任何节点，请确认网络是否正常，或手动刷新页面再次尝试。";
+      retryCount = 0;
+    }
   }
-  startBtn.disabled = false;
-  startBtn.onclick = ()=> runTest();
 }
 
 function jump(node){
