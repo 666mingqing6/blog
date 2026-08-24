@@ -115,8 +115,13 @@
   .card.error{border-color:rgba(255,135,148,0.4)}
   .card .top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
   .name{display:flex;align-items:center;gap:10px;min-width:0}
+  /* 统一所有 logo 的视觉高度，确保大小一致 */
   img.brand-logo, svg.brand-logo{
-    display:block;height:22px;max-width:140px;
+    display:block;
+    height:20px;           /* 统一高度 */
+    width:auto;           /* 宽度按比例自适应 */
+    max-width:120px;      /* 限制最大宽度，防止过宽的 logo 挤占空间 */
+    flex-shrink:0;
     filter:drop-shadow(0 1px 0 rgba(0,0,0,0.3));
   }
   img.brand-logo{object-fit:contain}
@@ -220,8 +225,10 @@ const ICONS = {
 };
 
 // 内联 SVG 品牌 Logo（含图标+文字，深色主题适配），已去除外部请求
+// 所有 SVG 均移除 width/height 属性，统一由 CSS 控制渲染尺寸
 const BRAND_SVG = {
-    Vercel:'<svg class="brand-logo" width="2048" height="407" viewBox="0 0 2048 407" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Vercel"><path fill-rule="evenodd" clip-rule="evenodd" d="M467.444 406.664L233.722 0.190918L0 406.664H467.444ZM703.186 388.161L898.51 18.668H814.024L679.286 287.007L544.547 18.668H460.061L655.385 388.161H703.186ZM2034.31 18.668V388.162H1964.37V18.668H2034.31ZM1644.98 250.25C1644.98 221.454 1650.99 196.127 1663.01 174.27C1675.03 152.412 1691.79 135.586 1713.28 123.79C1734.77 111.994 1759.91 106.095 1788.69 106.095C1814.19 106.095 1837.14 111.647 1857.54 122.749C1877.94 133.851 1894.15 150.331 1906.17 172.188C1918.19 194.046 1924.39 220.76 1924.75 252.332V268.465H1718.75C1720.2 291.363 1726.94 309.404 1738.96 322.588C1751.35 335.425 1767.93 341.843 1788.69 341.843C1801.8 341.843 1813.83 338.374 1824.75 331.435C1835.68 324.496 1843.88 315.129 1849.34 303.333L1920.93 308.537C1912.18 334.557 1895.79 355.374 1871.75 370.986C1847.7 386.599 1820.02 394.405 1788.69 394.405C1759.91 394.405 1734.77 388.507 1713.28 376.711C1691.79 364.915 1675.03 348.088 1663.01 326.231C1650.99 304.373 1644.98 279.047 1644.98 250.25ZM1852.62 224.23C1850.07 201.678 1842.97 185.199 1831.31 174.79C1819.65 164.035 1805.45 158.657 1788.69 158.657C1769.38 158.657 1753.72 164.382 1741.7 175.831C1729.67 187.28 1722.21 203.413 1719.29 224.23H1852.62ZM1526.96 174.79C1538.62 184.158 1545.9 197.168 1548.82 213.821L1620.94 210.178C1618.39 189.015 1610.93 170.627 1598.54 155.014C1586.15 139.402 1570.13 127.433 1550.45 119.106C1531.15 110.432 1509.84 106.095 1486.52 106.095C1457.74 106.095 1432.61 111.994 1411.11 123.79C1389.62 135.586 1372.86 152.412 1360.84 174.27C1348.82 196.127 1342.81 221.454 1342.81 250.25C1342.81 279.047 1348.82 304.373 1360.84 326.231C1372.86 348.088 1389.62 364.915 1411.11 376.711C1432.61 388.507 1457.74 394.405 1486.52 394.405C1510.56 394.405 1532.42 390.068 1552.09 381.395C1571.77 372.374 1587.79 359.711 1600.18 343.404C1612.57 327.098 1620.03 308.016 1622.58 286.159L1549.91 283.036C1547.36 301.424 1540.25 315.649 1528.6 325.71C1516.94 335.425 1502.91 340.282 1486.52 340.282C1463.94 340.282 1446.45 332.476 1434.06 316.863C1421.68 301.251 1415.49 279.047 1415.49 250.25C1415.49 221.454 1421.68 199.25 1434.06 183.637C1446.45 168.025 1463.94 160.219 1486.52 160.219C1502.19 160.219 1515.66 165.076 1526.96 174.79ZM1172.15 112.328H1237.24L1239.12 165.414C1243.74 150.388 1250.16 138.719 1258.39 130.407C1270.32 118.355 1286.96 112.328 1308.29 112.328H1334.87V169.148H1307.75C1292.56 169.148 1280.09 171.214 1270.32 175.346C1260.92 179.478 1253.69 186.021 1248.63 194.975C1243.93 203.928 1241.58 215.292 1241.58 229.066V388.161H1172.15V112.328ZM871.925 174.27C859.904 196.127 853.893 221.454 853.893 250.25C853.893 279.047 859.904 304.373 871.925 326.231C883.947 348.088 900.704 364.915 922.198 376.711C943.691 388.507 968.827 394.405 997.606 394.405C1028.93 394.405 1056.62 386.599 1080.66 370.986C1104.71 355.374 1121.1 334.557 1129.84 308.537L1058.26 303.333C1052.8 315.129 1044.6 324.496 1033.67 331.435C1022.74 338.374 1010.72 341.843 997.606 341.843C976.841 341.843 960.266 335.425 947.88 322.588C935.858 309.404 929.119 291.363 927.662 268.465H1133.67V252.332C1133.3 220.76 1127.11 194.046 1115.09 172.188C1103.07 150.331 1086.86 133.851 1066.46 122.749C1046.06 111.647 1023.11 106.095 997.606 106.095C968.827 106.095 943.691 111.994 922.198 123.79C900.704 135.586 883.947 152.412 871.925 174.27ZM1040.23 174.79C1051.88 185.199 1058.99 201.678 1061.54 224.23H928.208C931.123 203.413 938.591 187.28 950.612 175.831C962.634 164.382 978.298 158.657 997.606 158.657C1014.36 158.657 1028.57 164.035 1040.23 174.79Z" fill="#fff"/> </svg>',
+    Vercel:'<svg class="brand-logo" viewBox="0 0 2048 407" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Vercel"><path fill-rule="evenodd" clip-rule="evenodd" d="M467.444 406.664L233.722 0.190918L0 406.664H467.444ZM703.186 388.161L898.51 18.668H814.024L679.286 287.007L544.547 18.668H460.061L655.385 388.161H703.186ZM2034.31 18.668V388.162H1964.37V18.668H2034.31ZM1644.98 250.25C1644.98 221.454 1650.99 196.127 1663.01 174.27C1675.03 152.412 1691.79 135.586 1713.28 123.79C1734.77 111.994 1759.91 106.095 1788.69 106.095C1814.19 106.095 1837.14 111.647 1857.54 122.749C1877.94 133.851 1894.15 150.331 1906.17 172.188C1918.19 194.046 1924.39 220.76 1924.75 252.332V268.465H1718.75C1720.2 291.363 1726.94 309.404 1738.96 322.588C1751.35 335.425 1767.93 341.843 1788.69 341.843C1801.8 341.843 1813.83 338.374 1824.75 331.435C1835.68 324.496 1843.88 315.129 1849.34 303.333L1920.93 308.537C1912.18 334.557 1895.79 355.374 1871.75 370.986C1847.7 386.599 1820.02 394.405 1788.69 394.405C1759.91 394.405 1734.77 388.507 1713.28 376.711C1691.79 364.915 1675.03 348.088 1663.01 326.231C1650.99 304.373 1644.98 279.047 1644.98 250.25ZM1852.62 224.23C1850.07 201.678 1842.97 185.199 1831.31 174.79C1819.65 164.035 1805.45 158.657 1788.69 158.657C1769.38 158.657 1753.72 164.382 1741.7 175.831C1729.67 187.28 1722.21 203.413 1719.29 224.23H1852.62ZM1526.96 174.79C1538.62 184.158 1545.9 197.168 1548.82 213.821L1620.94 210.178C1618.39 189.015 1610.93 170.627 1598.54 155.014C1586.15 139.402 1570.13 127.433 1550.45 119.106C1531.15 110.432 1509.84 106.095 1486.52 106.095C1457.74 106.095 1432.61 111.994 1411.11 123.79C1389.62 135.586 1372.86 152.412 1360.84 174.27C1348.82 196.127 1342.81 221.454 1342.81 250.25C1342.81 279.047 1348.82 304.373 1360.84 326.231C1372.86 348.088 1389.62 364.915 1411.11 376.711C1432.61 388.507 1457.74 394.405 1486.52 394.405C1510.56 394.405 1532.42 390.068 1552.09 381.395C1571.77 372.374 1587.79 359.711 1600.18 343.404C1612.57 327.098 1620.03 308.016 1622.58 286.159L1549.91 283.036C1547.36 301.424 1540.25 315.649 1528.6 325.71C1516.94 335.425 1502.91 340.282 1486.52 340.282C1463.94 340.282 1446.45 332.476 1434.06 316.863C1421.68 301.251 1415.49 279.047 1415.49 250.25C1415.49 221.454 1421.68 199.25 1434.06 183.637C1446.45 168.025 1463.94 160.219 1486.52 160.219C1502.19 160.219 1515.66 165.076 1526.96 174.79ZM1172.15 112.328H1237.24L1239.12 165.414C1243.74 150.388 1250.16 138.719 1258.39 130.407C1270.32 118.355 1286.96 112.328 1308.29 112.328H1334.87V169.148H1307.75C1292.56 169.148 1280.09 171.214 1270.32 175.346C1260.92 179.478 1253.69 186.021 1248.63 194.975C1243.93 203.928 1241.58 215.292 1241.58 229.066V388.161H1172.15V112.328ZM871.925 174.27C859.904 196.127 853.893 221.454 853.893 250.25C853.893 279.047 859.904 304.373 871.925 326.231C883.947 348.088 900.704 364.915 922.198 376.711C943.691 388.507 968.827 394.405 997.606 394.405C1028.93 394.405 1056.62 386.599 1080.66 370.986C1104.71 355.374 1121.1 334.557 1129.84 308.537L1058.26 303.333C1052.8 315.129 1044.6 324.496 1033.67 331.435C1022.74 338.374 1010.72 341.843 997.606 341.843C976.841 341.843 960.266 335.425 947.88 322.588C935.858 309.404 929.119 291.363 927.662 268.465H1133.67V252.332C1133.3 220.76 1127.11 194.046 1115.09 172.188C1103.07 150.331 1086.86 133.851 1066.46 122.749C1046.06 111.647 1023.11 106.095 997.606 106.095C968.827 106.095 943.691 111.994 922.198 123.79C900.704 135.586 883.947 152.412 871.925 174.27ZM1040.23 174.79C1051.88 185.199 1058.99 201.678 1061.54 224.23H928.208C931.123 203.413 938.591 187.28 950.612 175.831C962.634 164.382 978.298 158.657 997.606 158.657C1014.36 158.657 1028.57 164.035 1040.23 174.79Z" fill="#fff"/></svg>',
+  Netlify:'<svg class="brand-logo" viewBox="0 0 512 209" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Netlify"><g clip-path="url(#clip_netlify)"><path d="M117.436 207.036V154.604L118.529 153.51H129.452L130.545 154.604V207.036L129.452 208.13H118.529L117.436 207.036Z" fill="#05BDBA"/><path d="M117.436 53.5225V1.09339L118.529 0H129.452L130.545 1.09339V53.5225L129.452 54.6159H118.529L117.436 53.5225Z" fill="#05BDBA"/><path d="M69.9539 169.238H68.4094L60.6869 161.512V159.967L78.7201 141.938L86.8976 141.942L87.9948 143.031V151.209L69.9539 169.238Z" fill="#05BDBA"/><path d="M69.9462 38.8917H68.4017L60.6792 46.6181V48.1626L78.7124 66.192L86.8899 66.1882L87.9871 65.0986V56.9212L69.9462 38.8917Z" fill="#05BDBA"/><path d="M1.09339 97.5104H75.3711L76.4645 98.6038V109.526L75.3711 110.62H1.09339L0 109.526V98.6038L1.09339 97.5104Z" fill="#05BDBA"/><path d="M440.999 97.5104H510.91L512.004 98.6038V109.526L510.91 110.62H436.633L435.539 109.526L439.905 98.6038L440.999 97.5104Z" fill="#05BDBA"/><path d="M212.056 108.727L210.963 109.821H177.079L175.986 110.914C175.986 113.101 178.173 119.657 186.916 119.657C190.196 119.657 193.472 118.564 194.566 116.377L195.659 115.284H208.776L209.869 116.377C208.776 122.934 203.313 132.774 186.916 132.774C168.336 132.774 159.589 119.657 159.589 104.357C159.589 89.0576 168.332 75.9408 185.822 75.9408C203.313 75.9408 212.056 89.0576 212.056 104.357V108.731V108.727ZM195.659 97.7971C195.659 96.7037 194.566 89.0538 185.822 89.0538C177.079 89.0538 175.986 96.7037 175.986 97.7971L177.079 98.8905H194.566L195.659 97.7971Z" fill="#014847"/><path d="M242.66 115.284C242.66 117.47 243.753 118.564 245.94 118.564H255.776L256.87 119.657V130.587L255.776 131.681H245.94C236.103 131.681 227.36 127.307 227.36 115.284V91.2368L226.266 90.1434H218.617L217.523 89.05V78.1199L218.617 77.0265H226.266L227.36 75.9332V66.0965L228.453 65.0031H241.57L242.663 66.0965V75.9332L243.757 77.0265H255.78L256.874 78.1199V89.05L255.78 90.1434H243.757L242.663 91.2368V115.284H242.66Z" fill="#014847"/><path d="M283.1 131.681H269.983L268.889 130.587V56.2636L269.983 55.1702H283.1L284.193 56.2636V130.587L283.1 131.681Z" fill="#014847"/><path d="M312.61 68.2871H299.493L298.399 67.1937V56.2636L299.493 55.1702H312.61L313.703 56.2636V67.1937L312.61 68.2871ZM312.61 131.681H299.493L298.399 130.587V78.1237L299.493 77.0304H312.61L313.703 78.1237V130.587L312.61 131.681Z" fill="#014847"/><path d="M363.98 56.2636V67.1937L362.886 68.2871H353.05C350.863 68.2871 349.769 69.3805 349.769 71.5672V75.9408L350.863 77.0342H361.793L362.886 78.1276V89.0576L361.793 90.151H350.863L349.769 91.2444V130.591L348.676 131.684H335.559L334.466 130.591V91.2444L333.372 90.151H325.723L324.629 89.0576V78.1276L325.723 77.0342H333.372L334.466 75.9408V71.5672C334.466 59.5438 343.209 55.1702 353.046 55.1702H362.882L363.976 56.2636H363.98Z" fill="#014847"/><path d="M404.42 132.774C400.046 143.704 395.677 150.261 380.373 150.261H374.906L373.813 149.167V138.237L374.906 137.144H380.373C385.836 137.144 386.929 136.05 388.023 132.77V131.677L370.536 89.05V78.1199L371.63 77.0265H381.466L382.56 78.1199L395.677 115.284H396.77L409.887 78.1199L410.98 77.0265H420.817L421.91 78.1199V89.05L404.424 132.77L404.42 132.774Z" fill="#014847"/><path d="M135.454 131.681L134.361 130.587L134.368 98.9172C134.368 93.4541 132.22 89.2182 125.625 89.0806C122.234 88.9926 118.354 89.0729 114.209 89.2488L113.59 89.8834L113.598 130.587L112.504 131.681H99.3913L98.2979 130.587V77.5388L99.3913 76.4454L128.901 76.1778C143.685 76.1778 149.668 86.3356 149.668 97.8009V130.587L148.575 131.681H135.454Z" fill="#014847"/></g><defs><clipPath id="clip_netlify"><rect width="512" height="208.126" fill="white"/></clipPath></defs></svg>',
   Cloudflare:'<svg class="brand-logo" viewBox="0 0 1239.3 310.1" xmlns="http://www.w3.org/2000/svg" aria-label="Cloudflare"><g><path fill="#FFFFFF" d="M1158.5 187.7c-3.4 0-6.1-2.7-6.1-6.1 0-3.3 2.7-6.1 6.1-6.1 3.3 0 6.1 2.7 6.1 6.1 0 3.4-2.8 6.1-6.1 6.1zm0-11c-2.7 0-4.9 2.2-4.9 4.9 0 2.7 2.2 4.9 4.9 4.9 2.7 0 4.9-2.2 4.9-4.9 0-2.7-2.2-4.9-4.9-4.9zm3.1 8.1h-1.4l-1.2-2.3h-1.6v2.3h-1.3v-6.7h3.2c1.4 0 2.3.9 2.3 2.2 0 1-.6 1.7-1.4 2l.2 2.5zm-2.4-3.5c.5 0 1-.3 1-1 0-.8-.4-1-1-1h-2v2h2zM523 174.9h15.6v42.5h27.1v13.6H523v-56.1zm58.8 28.2v-.1c0-16.1 13-29.2 30.3-29.2s30.1 12.9 30.1 29v.2c0 16.1-13 29.2-30.3 29.2-17.4.1-30.1-12.8-30.1-29.1zm44.6 0v-.1c0-8.1-5.8-15.1-14.4-15.1-8.5 0-14.2 6.9-14.2 15v.2c0 8.1 5.8 15.1 14.3 15.1 8.5-.1 14.3-7 14.3-15.1zm34.9 3.3v-31.5h15.8v31.2c0 8.1 4.1 11.9 10.3 11.9s10.3-3.7 10.3-11.5v-31.6h15.8V206c0 18.1-10.3 26-26.3 26-9.9 0-19.9-7.9-19.9-25.6zM737.3 174.9h21.7c20 0 31.7 11.5 31.7 27.7v.2c0 16.2-11.8 28.2-32 28.2h-21.4v-56.1zm21.9 42.3c9.3 0 15.5-5.1 15.5-14.2v-.2c0-9-6.2-14.2-15.5-14.2h-6.3v28.5h6.3zM813.2 174.9h44.9v13.7h-29.4v9.5h26.6v12.9h-26.6v20h-15.5v-56.1zM879.7 174.9h15.5v42.5h27.2v13.6h-42.7v-56.1zM963 174.5h15l23.9 56.5h-16.7l-4.1-10h-21.6l-4 10h-16.3L963 174.5zm13.7 34.4l-6.2-15.9-6.3 15.9h12.5zm58.2-34h26.5c8.6 0 14.5 2.2 18.3 6.1 3.3 3.2 5 7.5 5 13.1v.2c0 8.6-4.6 14.3-11.5 17.2l13.4 19.6h-18l-11.3-17h-6.8v17h-15.5v-56.1zm25.8 27.4c5.3 0 8.3-2.6 8.3-6.6V195c0-4.4-3.2-6.6-8.4-6.6h-10.2v13.5h10.3zm46.4-26.5h45.1v13.3h-29.7v8.4h26.9v12.3h-26.9v8.9h30.1v13.2h-45.5v-56.1zM489 209.7c-2.2 4.9-6.8 8.4-12.8 8.4-8.5 0-14.3-7.1-14.3-15.1v-.2c0-8.1 5.7-15 14.2-15 6.4 0 11.3 3.9 13.3 9.3h16.4c-2.6-13.4-14.4-23.3-29.6-23.3-17.3 0-30.3 13.1-30.3 29.2v.2c0 16.1 12.8 29 30.1 29 14.8 0 26.4-9.6 29.4-22.4H489z"/></g><g><polygon fill="#FFFFFF" points="391.1,169.6 348.2,145 340.8,141.8 165.3,143.1 165.3,232.1 391.1,232.2"/><path fill="#F38020" d="M313 224c2.1-7.2 1.3-13.8-2.2-18.7-3.2-4.5-8.6-7.1-15.1-7.4l-123.1-1.6c-.8 0-1.5-.4-1.9-1-.4-.6-.5-1.4-.3-2.2.4-1.2 1.6-2.1 2.9-2.2l124.2-1.6c14.7-.7 30.7-12.6 36.3-27.2l7.1-18.5c.3-.8.4-1.6.2-2.4-8-36.2-40.3-63.2-78.9-63.2-35.6 0-65.8 23-76.6 54.9-7-5.2-15.9-8-25.5-7.1-17.1 1.7-30.8 15.4-32.5 32.5-.4 4.4-.1 8.7.9 12.7-27.9.8-50.2 23.6-50.2 51.7 0 2.5.2 5 .5 7.5.2 1.2 1.2 2.1 2.4 2.1l227.2 0c1.3 0 2.5-.9 2.9-2.2L313 224z"/><path fill="#FAAE40" d="M352.2 144.9c-1.1 0-2.3 0-3.4.1-.8 0-1.5.6-1.8 1.4l-4.8 16.7c-2.1 7.2-1.3 13.8 2.2 18.7 3.2 4.5 8.6 7.1 15.1 7.4l26.2 1.6c.8 0 1.5.4 1.9 1 .4.6.5 1.5.3 2.2-.4 1.2-1.6 2.1-2.9 2.2l-27.3 1.6c-14.8.7-30.7 12.6-36.3 27.2l-2 5.1c-.4 1 .3 2 1.4 2h93.8c1.1 0 2.1-.7 2.4-1.8 1.6-5.8 2.5-11.9 2.5-18.2.1-37-30-67.1-67.2-67.1z"/></g></svg>',
   Gcore:'<svg class="brand-logo" viewBox="0 0 387.1 115.2" xmlns="http://www.w3.org/2000/svg" aria-label="Gcore"><path d="M98.96 57.6c0 31.81-25.79 57.6-57.6 57.6-12.85 0-24.72-4.21-34.3-11.32 1.64.92 3.33 1.75 5.07 2.5 6.59 2.84 13.69 4.31 20.87 4.31 13.37 0 26.24-5.06 36.04-14.14 9.8-9.08 15.82-21.53 16.84-34.86.14-1.26.22-2.52.24-3.78 0-1.61-.13-3.47-.3-5.17-.01-.16-.02-.33-.03-.49 0-.19-.01-.38-.03-.56l-.05.05c-.24-2.21-.49-3.91-.49-3.91H43.43l-3.25 6.08-7.46 14.1h31.58c-1.17 3.49-2.92 6.77-5.17 9.69-3.07 4.02-7.02 7.27-11.56 9.51-4.53 2.24-9.52 3.41-14.58 3.4-3.87 0-7.71-.7-11.34-2.04-6.35-2.32-11.83-6.53-15.7-12.07C2.08 70.95 0 64.36 0 57.6c0-4.33.85-8.63 2.51-12.63 1.66-4 4.09-7.64 7.15-10.71 3.06-3.06 6.7-5.5 10.71-7.15s8.3-2.51 12.63-2.51c6.99-.01 13.81 2.21 19.45 6.34l4.33-8.11 5.16-9.75c-8.61-5.61-18.67-8.59-28.95-8.58-9.09 0-17.94 2.34-25.77 6.68C16.79 4.16 28.59 0 41.36 0c31.81 0 57.6 25.79 57.6 57.6z" fill="#ff4c00"/><g fill="#ff4c00"><path d="M177.99 70.32c-2.06 2.47-4.64 4.44-7.57 5.77-2.62 1.15-5.44 1.73-8.3 1.71-3.65.06-7.26-.82-10.46-2.57-.12-.06-.21-.15-.33-.21-2.87-1.65-5.24-4.06-6.84-6.96-1.75-3.21-2.63-6.81-2.57-10.46-.06-3.65.82-7.26 2.57-10.46 1.61-2.9 3.97-5.3 6.84-6.96.12-.07.21-.15.33-.21 3.21-1.75 6.81-2.63 10.46-2.57 2.86-.02 5.69.55 8.31 1.69l5.94-11.18s-.09-.05-.14-.07c-4.69-1.98-9.74-2.96-14.83-2.88-5.62-.06-11.18 1.17-16.25 3.6-.42.21-.87.36-1.29.59-5.08 2.68-9.32 6.7-12.26 11.64-3.01 5.09-4.56 10.91-4.46 16.82-.09 5.91 1.45 11.73 4.46 16.82 2.94 4.93 7.19 8.95 12.26 11.63.42.22.87.38 1.29.59 5.04 2.42 10.57 3.66 16.16 3.6 5.11.07 10.17-.91 14.88-2.89.06-.03.12-.06.18-.09 4.28-1.85 8.05-4.69 11-8.3l-9.38-8.66z"/><path d="M208.69 86.01c-5.11-2.68-9.39-6.72-12.36-11.68-3-5.06-4.55-10.85-4.46-16.73-.08-5.88 1.46-11.67 4.46-16.73 2.97-4.95 7.24-8.99 12.36-11.68 5.46-2.87 11.55-4.33 17.72-4.24 6.15-.1 12.24 1.36 17.68 4.24 5.1 2.7 9.37 6.74 12.35 11.68 3.03 5.05 4.59 10.84 4.51 16.73.08 5.89-1.48 11.68-4.51 16.73-2.98 4.94-7.25 8.98-12.35 11.68-5.44 2.88-11.52 4.34-17.68 4.24-6.17.09-12.26-1.36-17.72-4.24zm27.82-10.78c2.98-1.69 5.43-4.17 7.08-7.17 1.75-3.21 2.63-6.81 2.57-10.46.06-3.65-.82-7.26-2.57-10.46-1.65-3-4.1-5.48-7.08-7.17-3.08-1.73-6.57-2.62-10.1-2.57-3.53-.05-7.02.84-10.1 2.57-2.98 1.69-5.43 4.17-7.08 7.17-1.75 3.21-2.63 6.81-2.57 10.46-.07 3.65.82 7.26 2.57 10.46 1.65 3 4.1 5.48 7.08 7.17 3.08 1.73 6.57 2.62 10.1 2.57 3.54.05 7.02-.84 10.1-2.57z"/><path d="M312.18 89.16l-12.17-17.58h-13.44v17.58h-14.61V26.03h27.32c5-.12 9.97.84 14.57 2.8 3.88 1.66 7.18 4.42 9.51 7.94 2.29 3.64 3.45 7.88 3.34 12.17.11 4.29-1.06 8.52-3.38 12.13-2.37 3.49-5.71 6.2-9.6 7.8l14.16 20.29h-15.69zm-3.7-48.38c-2.9-2.08-6.44-3.09-10.01-2.84h-11.9v22h11.9c3.57.25 7.12-.77 10.01-2.89 1.15-1 2.06-2.25 2.65-3.66.59-1.41.86-2.93.77-4.45.09-1.53-.17-3.07-.76-4.48-.6-1.42-1.51-2.67-2.67-3.68z"/><path d="M387.1 77.44v11.72h-48.88V26.03h47.71v11.73h-33.19v13.71h29.31v11.36h-29.31v14.61h34.36z"/></g></svg>'
 };
@@ -229,30 +236,34 @@ const BRAND_SVG = {
 // 返回 Logo HTML 片段：SVG 优先内联，PNG 使用 img
 function brandLogoMark(node){
   if(BRAND_SVG[node.name]) return BRAND_SVG[node.name];
-  if(node.logo) return '<img class="brand-logo" src="' + node.logo + '" alt="' + node.name + '" loading="lazy">';
+  if(node.logo) return '<img class="brand-logo" src="' + node.logo + '" alt="' + node.name + '" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span style="font-family:Space Grotesk,sans-serif;font-weight:600;font-size:16px;display:none">' + node.name + '</span>';
   return '<span style="font-family:Space Grotesk,sans-serif;font-weight:600;font-size:16px">' + node.name + '</span>';
 }
 
-const RACE_TIMEOUT = 1000;      // 任意节点 1 秒未响应即停止测速
-const CACHE_TTL = 10*60*1000;  // 缓存有效期 ms
-const CACHE_KEY = "blog-fastest-node-v1";
+const RACE_TIMEOUT  = 1000;      // 任意节点 1 秒未响应即停止测速
+const CACHE_TTL     = 10*60*1000; // 缓存有效期 ms
+const CACHE_KEY     = "blog-fastest-node-v1";
+const PROBE_URL     = "/favicon.ico";  // 用 favicon 作为探测资源
+const MAX_DELAY     = 2500;            // 视为不可用/异常的最大延迟 ms
+const AUTO_JUMP_DELAY = 3000;          // 测速完成后等待自动进入的秒数
 
-const PROBE_URL  = "/favicon.ico";              // 用 favicon 作为探测资源
-const MAX_DELAY  = 2500;                        // 视为不可用/异常的最大延迟 ms
-const AUTO_JUMP_DELAY = 3000;                   // 测速完成后等待自动进入的秒数
-
-let results = {};   // {name: {lat, ok}}
-let locked  = false; // 跳转前的锁定（防止重复）
+let results   = {};   // {name: {lat, ok}}
+let locked    = false; // 跳转前的锁定（防止重复）
 let retryCount = 0;  // 自动重测次数（最多自动重测一次）
+let jumpTimer  = null; // 自动跳转的 setTimeout 引用，用于取消
+let cdTimer    = null; // 倒计时的 setInterval 引用
 
 // ---------- 渲染 ----------
 function renderCards(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-  NODES.forEach((node)=>{
+  NODES.forEach(function(node){
     const c = document.createElement("div");
     c.className = "card locked";
     c.id = "card-" + node.name;
+    c.setAttribute("role", "button");
+    c.setAttribute("tabindex", "0");
+    c.setAttribute("aria-label", node.name + " 节点");
     c.innerHTML =
       '<div class="top-row">' +
         '<div class="name">' +
@@ -267,11 +278,22 @@ function renderCards(){
         '<div class="state" id="state-' + node.name + '">探测中</div>' +
       '</div>' +
       '<div class="meter"><i id="meter-' + node.name + '"></i></div>';
+    // 允许用户点击非锁定卡片手动跳转
+    c.addEventListener("click", function(){
+      if(!c.classList.contains("locked")) jump(node);
+    });
+    // 键盘可访问性：Enter 键触发跳转
+    c.addEventListener("keydown", function(e){
+      if((e.key === "Enter" || e.key === " ") && !c.classList.contains("locked")){
+        e.preventDefault();
+        jump(node);
+      }
+    });
     grid.appendChild(c);
   });
 }
 
-function setStatus(text, spin=true){
+function setStatus(text, spin){
   document.getElementById("statusText").textContent = text;
   document.getElementById("spinner").style.display = spin ? "" : "none";
 }
@@ -281,6 +303,7 @@ function renderResult(name, ok, lat){
   const latEl = document.getElementById("lat-" + name);
   const meter = document.getElementById("meter-" + name);
   const card  = document.getElementById("card-" + name);
+  if(!state || !latEl || !meter || !card) return; // 防御性检查
   if(ok){
     latEl.innerHTML = lat.toFixed(0) + '<span class="unit">ms</span>';
     state.innerHTML = ICONS.ok + '正常';
@@ -298,83 +321,108 @@ function renderResult(name, ok, lat){
 // ---------- 测速 ----------
 // 用 fetch + no-cors 规避跨域限制：no-cors 无法读取响应内容，但能计时，resolve 即代表资源可联通。
 function probeOnce(url, timeout){
-  return new Promise((resolve)=>{
-    const target = url + PROBE_URL + "?t=" + Date.now() + Math.random();
-    const start = performance.now();
-    const done = ()=>{ resolve({ok:true, lat: performance.now()-start}); };
-    const to = setTimeout(()=>{ resolve({ok:false}); }, timeout);
+  return new Promise(function(resolve){
+    var cacheBust = "t=" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+    var target = url + PROBE_URL + "?" + cacheBust;
+    var start = performance.now();
+    var settled = false;
+    var to = setTimeout(function(){
+      if(settled) return;
+      settled = true;
+      resolve({ok:false});
+    }, timeout);
     fetch(target, { mode:"no-cors", cache:"no-store", credentials:"omit" })
-      .then(()=>{ clearTimeout(to); done(); })
-      .catch(()=>{ clearTimeout(to); resolve({ok:false}); });
+      .then(function(){
+        if(settled) return;
+        settled = true;
+        clearTimeout(to);
+        resolve({ok:true, lat: performance.now()-start});
+      })
+      .catch(function(){
+        if(settled) return;
+        settled = true;
+        clearTimeout(to);
+        resolve({ok:false});
+      });
   });
 }
 
 // 单次探测，受全局 1 秒期限约束；立即渲染结果
 async function testNode(node, deadline){
-  const timeout = Math.max(80, deadline - Date.now());
-  const r = await probeOnce(node.url, timeout);
-  const ok = r.ok && r.lat <= MAX_DELAY;
-  results[node.name] = { ok, lat: ok ? r.lat : Infinity };
-  renderResult(node.name, ok, r.lat);
+  var remaining = deadline - Date.now();
+  var timeout = Math.max(200, remaining); // 最低 200ms 超时时间，避免太短导致不公正
+  var r = await probeOnce(node.url, timeout);
+  var ok = r.ok && r.lat <= MAX_DELAY;
+  results[node.name] = { ok: ok, lat: ok ? r.lat : Infinity };
+  renderResult(node.name, ok, r.ok ? r.lat : Infinity);
   return results[node.name];
 }
 
 // 等待倒计时（醒目）
-let cdTimer = null;
 function startCountdown(seconds){
-  const el = document.getElementById("cdNum");
+  var el = document.getElementById("cdNum");
   el.style.display = "";
-  let left = seconds;
+  var left = seconds;
   el.textContent = "" + Math.ceil(left);
   if(cdTimer) clearInterval(cdTimer);
-  cdTimer = setInterval(()=>{
+  cdTimer = setInterval(function(){
     left -= 0.1;
     if(left <= 0){ clearInterval(cdTimer); cdTimer = null; el.style.display = "none"; return; }
     el.textContent = "" + Math.ceil(left);
   }, 100);
 }
 function hideCountdown(){
-  const el = document.getElementById("cdNum");
+  var el = document.getElementById("cdNum");
   el.style.display = "none";
   if(cdTimer){ clearInterval(cdTimer); cdTimer = null; }
+}
+
+// 清理所有 pending 定时器（防止内存泄漏和重复跳转）
+function clearTimers(){
+  if(jumpTimer){ clearTimeout(jumpTimer); jumpTimer = null; }
+  hideCountdown();
 }
 
 // ---------- 主流程 ----------
 async function runTest(){
   locked = false;
+  clearTimers();
+  results = {}; // 清空旧结果，防止重试时残留脏数据
   renderCards();
-  hideCountdown();
-  const bottomNote = document.getElementById("bottomNote");
+  var bottomNote = document.getElementById("bottomNote");
   bottomNote.textContent = "测速结果会缓存，下次访问将直接进入最优节点，无需等待。";
 
   if(retryCount === 0){
-    setStatus("正在并行测试各节点网络延迟…");
+    setStatus("正在并行测试各节点网络延迟…", true);
   } else {
-    setStatus("所有节点均超时，正在重新测速中…（第 " + retryCount + " 次重试）");
+    setStatus("所有节点均超时，正在重新测速中…（第 " + retryCount + " 次重试）", true);
   }
 
   // 任意节点 1 秒未响应即停止测速（每个探测在期限前必 resolve）
-  const deadline = Date.now() + RACE_TIMEOUT;
-  await Promise.all(NODES.map(n => testNode(n, deadline)));
+  var deadline = Date.now() + RACE_TIMEOUT;
+  await Promise.all(NODES.map(function(n){ return testNode(n, deadline); }));
 
-  const okNodes = NODES.filter(n => results[n.name].ok);
+  var okNodes = NODES.filter(function(n){ return results[n.name] && results[n.name].ok; });
   if(okNodes.length){
-    okNodes.sort((a,b)=> results[a.name].lat - results[b.name].lat);
-    const fastest = okNodes[0];
+    okNodes.sort(function(a,b){ return results[a.name].lat - results[b.name].lat; });
+    var fastest = okNodes[0];
     document.getElementById("card-" + fastest.name).classList.add("winner");
-    document.getElementById("spinner").style.display = "none";
+    // 解锁所有卡片，允许用户手动点击切换
+    document.querySelectorAll(".card.locked").forEach(function(c){ c.classList.remove("locked"); });
     setStatus("已选中最优节点：" + fastest.name + "（" + results[fastest.name].lat.toFixed(0) + "ms）", false);
     saveCache(fastest.name);
     startCountdown(AUTO_JUMP_DELAY / 1000);
-    setTimeout(()=> jump(fastest), AUTO_JUMP_DELAY);
+    jumpTimer = setTimeout(function(){ jump(fastest); }, AUTO_JUMP_DELAY);
     retryCount = 0;
   } else {
     if(retryCount < 1){
       retryCount++;
-      setTimeout(()=> runTest(), 600);
+      setTimeout(function(){ runTest(); }, 600);
     } else {
       setStatus("所有节点均超时，请检查网络连接后刷新页面", false);
       bottomNote.textContent = "无法连接到任何节点，请确认网络是否正常，或手动刷新页面再次尝试。";
+      // 解锁卡片，允许用户手动尝试
+      document.querySelectorAll(".card.locked").forEach(function(c){ c.classList.remove("locked"); });
       retryCount = 0;
     }
   }
@@ -383,6 +431,7 @@ async function runTest(){
 function jump(node){
   if(locked) return;
   locked = true;
+  clearTimers();
   // 保留访问时的路径后缀（如分享链接 /consciousness-China/），跳转到对应平台的文章页
   var base = node.url.replace(/\/+$/, '');
   var suffix = (location.pathname && location.pathname !== '/') ? location.pathname : '/';
@@ -392,14 +441,14 @@ function jump(node){
 // ---------- 缓存 ----------
 function saveCache(fastName){
   try{
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ name:fastName, t:Date.now() }));
-  }catch(e){}
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ name: fastName, t: Date.now() }));
+  }catch(e){ /* localStorage 不可用时静默降级 */ }
 }
 function loadCached(){
   try{
-    const raw = localStorage.getItem(CACHE_KEY);
+    var raw = localStorage.getItem(CACHE_KEY);
     if(!raw) return null;
-    const d = JSON.parse(raw);
+    var d = JSON.parse(raw);
     if(!d.name || Date.now() - d.t > CACHE_TTL) return null;
     return d.name;
   }catch(e){ return null; }
@@ -408,18 +457,27 @@ function loadCached(){
 // ---------- 启动 ----------
 renderCards();
 (function init(){
-  const cached    = loadCached();
-  const viaGateway = new URLSearchParams(location.search).get("via");
+  var cached = loadCached();
+  var viaGateway = new URLSearchParams(location.search).get("via");
   if(cached && !viaGateway){
-    const node = NODES.find(n=>n.name===cached);
+    var node = NODES.find(function(n){ return n.name === cached; });
     if(node){
-      setStatus("已为你选用缓存的最优节点 " + node.name + "，正在进入…");
-      setTimeout(()=> jump(node), 500);
+      setStatus("已为你选用缓存的最优节点 " + node.name + "，正在进入…", false);
+      jumpTimer = setTimeout(function(){ jump(node); }, 500);
       return;
     }
   }
   runTest();
 })();
+
+// 页面可见性变化时清理定时器（用户切走标签页时防止后台跳转）
+document.addEventListener("visibilitychange", function(){
+  if(document.hidden && jumpTimer){
+    // 标签页不可见时暂停自动跳转，但保留状态
+    clearTimeout(jumpTimer);
+    jumpTimer = null;
+  }
+});
 </script>
 </body>
 </html>
