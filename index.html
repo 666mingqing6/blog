@@ -114,25 +114,14 @@
   }
   .card.error{border-color:rgba(255,135,148,0.4)}
   .card .top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-  .name{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;
-    font-weight:600;font-size:16px;letter-spacing:-0.01em}
-  /* 品牌 logo 徽章：品牌色渐变 + 白色 mark */
-  .logo-chip{
-    width:26px;height:26px;border-radius:8px;flex-shrink:0;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;position:relative;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 12px -4px rgba(0,0,0,0.6);
+  .name{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand-logo{
+    display:block;height:22px;max-width:140px;object-fit:contain;
+    filter:drop-shadow(0 1px 0 rgba(0,0,0,0.3));
   }
-  .logo-chip svg{width:15px;height:15px}
-  .logo-chip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  .lc-vercel{background:linear-gradient(135deg,#c9cdd4,#f4f6f9)}
-  .lc-vercel svg{width:13px;height:13px}
-  .lc-netlify{background:linear-gradient(135deg,#0fa47f,#18d59c)}
-  .lc-cloudflare{background:linear-gradient(135deg,#f4762e,#faac3c)}
-  .lc-edgeone{background:linear-gradient(135deg,#03a2d8,#3ecaff)}
-  .lc-gcore{background:linear-gradient(135deg,#e63900,#ff6a2e)}
   .badge{
     font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#c9d1ff;
-    padding:3px 9px;border-radius:999px;
+    padding:3px 9px;border-radius:999px;flex-shrink:0;
     background:linear-gradient(135deg, rgba(143,167,255,0.16), rgba(185,166,255,0.12));
     border:1px solid rgba(143,167,255,0.22);
   }
@@ -211,14 +200,20 @@
 
 // ===== 节点配置（按需增删）=====
 // url   : 该平台的博客地址（用于探测 + 最终跳转）
-// name  : 显示名称
+// name  : 显示名称（备用/无障碍）
 // tag   : 平台标签
+// logo  : 完整品牌 logo（包含图标+文字，深色主题适用）
 const NODES = [
-  { url: "https://vercel.blog.646474.xyz/",    name: "Vercel",     tag: "Vercel" },
-  { url: "https://netlify.blog.646474.xyz/",   name: "Netlify",    tag: "Netlify" },
-  { url: "https://cf.blog.646474.xyz/",        name: "Cloudflare", tag: "CF" },
-  { url: "https://eo.blog.646474.xyz/",        name: "EdgeOne",    tag: "EdgeOne" },
-  { url: "https://gcore.blog.646474.xyz/",     name: "Gcore",      tag: "Gcore" },
+  { url: "https://vercel.blog.646474.xyz/",    name: "Vercel",     tag: "Vercel",
+    logo:"https://tu.646474.xyz/vercel.svg" },
+  { url: "https://netlify.blog.646474.xyz/",   name: "Netlify",    tag: "Netlify",
+    logo:"https://cdn.brandfetch.io/idgmtwY0c_/theme/dark/logo.svg?c=1dxbfHSJFAPEGdCLU4o5B" },
+  { url: "https://cf.blog.646474.xyz/",        name: "Cloudflare", tag: "CF",
+    logo:"https://cdn.brandfetch.io/idJ3Cg8ymG/theme/light/idASSo3XVu.svg?c=1dxbfHSJFAPEGdCLU4o5B" },
+  { url: "https://eo.blog.646474.xyz/",        name: "EdgeOne",    tag: "EdgeOne",
+    logo:"https://cdn.brandfetch.io/idwYsAx8ur/w/414/h/60/theme/dark/logo.png?c=1dxbfHSJFAPEGdCLU4o5B" },
+  { url: "https://gcore.blog.646474.xyz/",     name: "Gcore",      tag: "Gcore",
+    logo:"https://tu.646474.xyz/gcore-logo.svg" },
 ];
 
 const ICONS = {
@@ -261,7 +256,10 @@ function renderCards(){
     c.id = "card-" + node.name;
     c.innerHTML =
       '<div class="top-row">' +
-        '<div class="name">' + logoChip(node.name) + node.name + ' <span class="badge">' + node.tag + '</span></div>' +
+        '<div class="name">' +
+          '<img class="brand-logo" src="' + node.logo + '" alt="' + node.name + '" loading="lazy" onerror="this.style.display=\'none\';this.insertAdjacentHTML(\'afterend\',\'' + node.name + '\')">' +
+          ' <span class="badge">' + node.tag + '</span>' +
+        '</div>' +
         ICONS.arrow +
       '</div>' +
       '<div class="desc">' + node.url + '</div>' +
