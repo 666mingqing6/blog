@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
 <title>节点选择 · 博客加速</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,11 +90,45 @@
   }
   @keyframes sp{to{transform:rotate(360deg)}}
 
-  /* 等待倒计时：醒目大字 + 呼吸光晕 */
-  .cd{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:44px;line-height:1;
-      color:var(--accent);min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums;
-      text-shadow:0 0 26px rgba(143,167,255,0.6);animation:cdp 1s var(--ease) infinite}
-  @keyframes cdp{0%,100%{opacity:1}50%{opacity:.4}}
+  /* ---------- 跳转倒计时（醒目主卡） ---------- */
+  .jump-card{
+    display:flex;align-items:center;gap:26px;
+    margin-bottom:28px;padding:22px 28px;border-radius:20px;
+    background:linear-gradient(160deg, rgba(74,222,128,0.09), var(--card) 55%);
+    border:1px solid rgba(74,222,128,0.35);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    box-shadow:0 24px 60px -28px rgba(74,222,128,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    animation:cardIn .5s var(--ease) both;
+  }
+  .jump-card[hidden]{display:none}
+  /* 环形进度：SVG 双圆，fg 用 stroke-dashoffset 表达剩余时间 */
+  .ring{position:relative;width:104px;height:104px;flex-shrink:0}
+  .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:7;stroke-linecap:round}
+  .ring .ring-bg{stroke:rgba(255,255,255,0.08)}
+  .ring .ring-fg{
+    stroke:var(--green);
+    stroke-dasharray:326.7;stroke-dashoffset:0;
+    filter:drop-shadow(0 0 8px rgba(74,222,128,0.55));
+    transition:stroke-dashoffset .12s linear;
+  }
+  .ring-num{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;line-height:1;
+  }
+  .ring-num b{
+    font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:40px;
+    color:var(--text);font-variant-numeric:tabular-nums;
+    text-shadow:0 0 24px rgba(74,222,128,0.5);
+  }
+  .ring-num i{font-style:normal;font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.08em}
+  .jump-info{min-width:0;flex:1}
+  .jump-title{font-size:16.5px;font-weight:600;letter-spacing:-0.01em}
+  .jump-title b{color:var(--green)}
+  .jump-meta{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.6}
+  .jump-meta b{color:var(--text);font-variant-numeric:tabular-nums}
+  .jump-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .jump-actions .btn{padding:9px 20px;font-size:13px}
 
   /* ---------- 卡片网格 ---------- */
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:40px}
@@ -166,11 +201,6 @@
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);
   }
   .icon-tile .brand-icon{width:17px;height:17px;display:block}
-  /* EdgeOne 官方图标为图片格式，直接铺满瓷砖（object-fit:cover）保持一致外观 */
-  .icon-tile img.brand-icon{
-    width:100%;height:100%;object-fit:cover;
-    border-radius:inherit;overflow:hidden;
-  }
   .brand-name{
     font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;
     letter-spacing:-0.01em;white-space:nowrap;
@@ -220,6 +250,11 @@
     box-shadow:0 18px 44px -16px rgba(143,167,255,0.55), inset 0 1px 0 rgba(255,255,255,0.45);
   }
   .btn.primary:hover{box-shadow:0 24px 54px -18px rgba(143,167,255,0.7), inset 0 1px 0 rgba(255,255,255,0.5)}
+  .btn.ghost{
+    border-color:rgba(74,222,128,0.35);color:var(--green);
+    background:rgba(74,222,128,0.06);
+  }
+  .btn.ghost:hover{border-color:rgba(74,222,128,0.6);background:rgba(74,222,128,0.12)}
   .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 
   /* 无障碍：用户偏好减少动效时，关闭所有动画/过渡 */
@@ -235,6 +270,9 @@
     .grid{grid-template-columns:1fr;gap:12px}
     .actions{flex-direction:column}
     .btn{width:100%;justify-content:center}
+    .jump-card{flex-direction:column;text-align:center;gap:18px;padding:24px 18px}
+    .jump-actions{justify-content:center}
+    .jump-actions .btn{width:100%;justify-content:center}
   }
 </style>
 </head>
@@ -250,8 +288,29 @@
 
   <div class="statusbar" id="statusbar">
     <span class="spin" id="spinner"></span>
-    <span id="statusText">正在测速…</span>
-    <span class="cd" id="cdNum" style="display:none">3</span>
+    <span id="statusText" aria-live="polite">正在测速…</span>
+  </div>
+
+  <!-- 跳转倒计时：测速完成后展示，环形进度 + 大字秒数 + 手动控制 -->
+  <div class="jump-card" id="jumpCard" hidden>
+    <div class="ring" aria-hidden="true">
+      <svg viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="ring-num">
+        <b id="cdNum">5</b>
+        <i>秒后进入</i>
+      </div>
+    </div>
+    <div class="jump-info">
+      <div class="jump-title">即将自动进入 <b id="jumpNode">—</b> 节点</div>
+      <div class="jump-meta" id="jumpMeta">—</div>
+      <div class="jump-actions">
+        <button type="button" class="btn primary" id="jumpNow">立即进入</button>
+        <button type="button" class="btn ghost" id="jumpCancel">取消自动跳转</button>
+      </div>
+    </div>
   </div>
 
   <p class="note" id="bottomNote">测速结果会缓存，下次访问将直接进入最优节点，无需等待。</p>
@@ -263,17 +322,15 @@
 "use strict";
 
 // ===== 节点配置（按需增删）=====
-// url   : 该平台的博客地址（用于探测 + 最终跳转）
-// name  : 显示名称（备用/无障碍）
-// tag   : 平台标签
-// logo  : 品牌图标资源（仅无 Simple Icons SVG 的品牌需外部引用，如 EdgeOne）
+// url  : 该平台的博客地址（用于探测 + 最终跳转）
+// name : 显示名称（同时是 BRAND_SVG 图标与卡片 DOM 的键）
+// tag  : 平台标签
+// probe: 探测资源路径（默认 /favicon.ico；无 favicon 的站点改用 "/"）
 const NODES = [
   { url: "https://vercel.blog.646474.xyz/",    name: "Vercel",     tag: "Vercel" },
   { url: "https://netlify.blog.646474.xyz/",   name: "Netlify",    tag: "Netlify" },
   { url: "https://cf.blog.646474.xyz/",        name: "Cloudflare", tag: "CF" },
-  { url: "https://eo.blog.646474.xyz/",        name: "EdgeOne",    tag: "EdgeOne",
-    logo:"https://cdn.brandfetch.io/idwYsAx8ur/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-    probe:"/" },  // 该站点无 favicon.ico，改用首页作为探测资源
+  { url: "https://eo.blog.646474.xyz/",        name: "EdgeOne",    tag: "EdgeOne", probe: "/" },
   { url: "https://gcore.blog.646474.xyz/",     name: "Gcore",      tag: "Gcore" },
 ];
 
@@ -283,39 +340,41 @@ const ICONS = {
   arrow:'<svg class="node-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>'
 };
 
-// 品牌图标：Simple Icons 官方 24x24 单色路径，填品牌色适配深色主题；EdgeOne 用官方图标图片
+// 品牌图标：全部使用内联 SVG（Simple Icons 官方路径填品牌色），
+// 无任何外链图片依赖 —— 离线/CDN 异常时图标也不会缺失。
+// EdgeOne 使用腾讯云官方 Logo（EdgeOne 为腾讯云旗下产品，Simple Icons 未收录）。
 const BRAND_SVG = {
   Vercel:'<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M24 22.525H0l12-21.05 12 21.05z" fill="#ffffff"/></svg>',
   Netlify:'<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6.49 19.04h-.23L5.13 17.9v-.23l1.73-1.71h1.2l.15.15v1.2L6.5 19.04ZM5.13 6.31V6.1l1.13-1.13h.23L8.2 6.68v1.2l-.15.15h-1.2L5.13 6.31Zm9.96 9.09h-1.65l-.14-.13v-3.83c0-.68-.27-1.2-1.1-1.23-.42 0-.9 0-1.43.02l-.07.08v4.96l-.14.14H8.9l-.13-.14V8.73l.13-.14h3.7a2.6 2.6 0 0 1 2.61 2.6v4.08l-.13.14Zm-8.37-2.44H.14L0 12.82v-1.64l.14-.14h6.58l.14.14v1.64l-.14.14Zm17.14 0h-6.58l-.14-.14v-1.64l.14-.14h6.58l.14.14v1.64l-.14.14ZM11.05 6.55V1.64l.14-.14h1.65l.14.14v4.9l-.14.14h-1.65l-.14-.13Zm0 15.81v-4.9l.14-.14h1.65l.14.13v4.91l-.14.14h-1.65l-.14-.14Z" fill="#00C7B7"/></svg>',
   Cloudflare:'<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727" fill="#F38020"/></svg>',
+  EdgeOne:'<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><title>TencentCloud</title><path d="M20.0483 17.1416C19.6945 17.4914 18.987 18.0161 17.7488 18.0161C17.2182 18.0161 16.5991 18.0161 16.3338 18.0161C15.98 18.0161 13.3268 18.0161 10.143 18.0161C12.4424 15.8298 14.3881 13.9932 14.565 13.8183C14.7419 13.6434 15.1841 13.2061 15.6263 12.8563C16.5107 12.0692 17.2182 11.9817 17.8373 11.9817C18.7217 11.9817 19.4292 12.3316 20.0483 12.8563C21.2864 13.9932 21.2864 16.0047 20.0483 17.1416ZM21.5518 11.457C20.6674 10.495 19.3408 9.88281 17.9257 9.88281C16.6875 9.88281 15.6263 10.3201 14.6534 11.0197C14.2997 11.3695 13.769 11.7194 13.3268 12.2441C12.9731 12.5939 5.36719 19.9401 5.36719 19.9401C5.80939 20.0276 6.34003 20.0276 6.78223 20.0276C7.22443 20.0276 16.0685 20.0276 16.4222 20.0276C17.1298 20.0276 17.6604 20.0276 18.191 19.9401C19.3408 19.8527 20.4905 19.4154 21.4633 18.5409C23.4975 16.6168 23.4975 13.381 21.5518 11.457Z" fill="#00A3FF"/><path d="M9.1701 10.9323C8.19726 10.2326 7.22442 9.88281 6.07469 9.88281C4.65965 9.88281 3.33304 10.495 2.44864 11.457C0.502952 13.4685 0.502952 16.6168 2.53708 18.6283C3.42148 19.4154 4.30589 19.8527 5.36717 19.9401L7.4013 18.0161C7.04754 18.0161 6.60533 18.0161 6.25157 18.0161C5.10185 17.9287 4.39433 17.5789 3.95212 17.1416C2.71396 15.9172 2.71396 13.9932 3.86368 12.7688C4.48277 12.1566 5.19029 11.8943 6.07469 11.8943C6.60533 11.8943 7.4013 11.9817 8.19726 12.7688C8.55102 13.1186 9.52386 13.8183 9.87763 14.1681H9.96607L11.2927 12.8563V12.7688C10.6736 12.1566 9.70075 11.3695 9.1701 10.9323Z" fill="#00C8DC"/><path d="M18.4564 8.74536C17.4836 6.12171 14.9188 4.28516 12.0003 4.28516C8.5511 4.28516 5.80945 6.82135 5.27881 9.96973C5.54413 9.96973 5.80945 9.88228 6.16321 9.88228C6.51697 9.88228 6.95917 9.96973 7.31294 9.96973C7.75514 7.78336 9.70082 6.20917 12.0003 6.20917C13.946 6.20917 15.6263 7.34608 16.4223 9.00773C16.4223 9.00773 16.5107 9.09518 16.5107 9.00773C17.1298 8.92027 17.8373 8.74536 18.4564 8.74536C18.4564 8.83282 18.4564 8.83282 18.4564 8.74536Z" fill="#006EFF"/></svg>',
   Gcore:'<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M22.2852 12c0 6.627-5.3608 12-11.973 12-2.6711 0-5.1385-.877-7.1298-2.3583 1.1668.6558 3.0299 1.4182 5.392 1.4187 2.7791 0 5.4545-1.0542 7.4915-2.9458a11.06 11.06 0 0 0 3.5004-7.2625 8.3 8.3 0 0 0 .05-.7875c.0099-.4174-.0662-1.0793-.075-1.2959l-.0103.0104a24 24 0 0 0-.1018-.8145h-8.6868c-.7485 1.398-1.486 2.8019-2.2262 4.2042h6.5644a6.91 6.91 0 0 1-1.0747 2.0187 6.82 6.82 0 0 1-2.403 1.9813 6.796 6.796 0 0 1-3.0306.7082c-.8044 0-1.6026-.1458-2.3572-.425a6.845 6.845 0 0 1-3.2635-2.5145A6.893 6.893 0 0 1 1.7148 12a6.88 6.88 0 0 1 .5218-2.6312 6.92 6.92 0 0 1 1.4862-2.2313 6.82 6.82 0 0 1 2.2263-1.4896c.8335-.3437 1.7252-.5229 2.6253-.5229a6.82 6.82 0 0 1 4.043 1.3208c.6626-1.2376 1.317-2.4795 1.9726-3.7208C11.1651.4884 6.7805.3489 3.2156 2.3292 5.205.8667 7.6577 0 10.3122 0c6.6122 0 11.973 5.373 11.973 12" fill="#FF4C00"/></svg>'
 };
 
-// 返回统一规格的品牌标识：图标瓷砖（Simple Icons 内联 SVG / 官方图片）+ 品牌名文字
+// 返回统一规格的品牌标识：图标瓷砖（内联 SVG）+ 品牌名文字
 function brandLogoMark(node){
-  var icon = BRAND_SVG[node.name];
-  if(!icon && node.logo){
-    icon = '<img class="brand-icon" src="' + node.logo + '" alt="' + node.name + '" loading="lazy"'
-      + ' onerror="this.remove()">';
-  }
-  return '<span class="icon-tile">' + (icon || '') + '</span>'
+  var icon = BRAND_SVG[node.name]
+    || '<svg class="brand-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><text x="12" y="17" text-anchor="middle" font-size="14" font-family="sans-serif" fill="#9aa0b3">' + (node.name[0] || '?') + '</text></svg>';
+  return '<span class="icon-tile">' + icon + '</span>'
        + '<span class="brand-name">' + node.name + '</span>';
 }
 
-const RACE_TIMEOUT  = 2000;       // 任意节点 2 秒未响应即判定超时，停止等待
-const CACHE_TTL     = 10*60*1000; // 缓存有效期 ms
-const CACHE_KEY     = "blog-fastest-node-v1";
-const PROBE_URL     = "/favicon.ico"; // 用 favicon 作为探测资源
-const MAX_DELAY     = RACE_TIMEOUT;   // 视为异常的最大延迟 ms（不可能超过探测超时，与超时统一）
-const AUTO_JUMP_DELAY = 5000;         // 测速完成后自动进入的等待时长 ms
+const RACE_TIMEOUT    = 2000;        // 任意节点 2 秒未响应即判定超时，停止等待
+const CACHE_TTL       = 10*60*1000;  // 缓存有效期 ms
+const CACHE_KEY       = "blog-fastest-node-v1";
+const PROBE_URL       = "/favicon.ico"; // 用 favicon 作为探测资源
+const MAX_DELAY       = RACE_TIMEOUT;   // 视为异常的最大延迟 ms（与探测超时统一）
+const AUTO_JUMP_DELAY = 5000;           // 测速完成后自动进入的等待时长 ms
+const RING_CIRC       = 2 * Math.PI * 52; // 倒计时圆环周长（r=52）
 
-let results   = {};   // {name: {lat, ok}}
-let locked    = false; // 跳转前的锁定（防止重复）
-let retryCount = 0;  // 自动重测次数（最多自动重测一次）
+let results    = {};   // {name: {lat, ok}}
+let locked     = false; // 跳转前的锁定（防止重复）
+let retryCount = 0;    // 自动重测次数（最多自动重测一次）
 let jumpTimer  = null; // 自动跳转的 setTimeout 引用，用于取消
 let retryTimer = null; // 重试的 setTimeout 引用，防止与跳转竞争
 let cdTimer    = null; // 倒计时的 setInterval 引用
 let pendingJump = null; // {node, fireAt} 后台暂停期间挂起的自动跳转
+let fastestNode = null; // 当前测速出的最优节点（供「立即进入」使用）
 
 // ---------- 渲染 ----------
 function renderCards(){
@@ -413,7 +472,7 @@ function probeOnce(url, timeout, probePath){
   });
 }
 
-// 单次探测，受全局 1 秒期限约束；立即渲染结果
+// 单次探测，受全局 2 秒期限约束；立即渲染结果
 async function testNode(node, deadline){
   var remaining = deadline - Date.now();
   var timeout = Math.max(200, remaining); // 最低 200ms 超时时间，避免太短导致不公正
@@ -424,22 +483,29 @@ async function testNode(node, deadline){
   return results[node.name];
 }
 
-// 等待倒计时（醒目）
-function startCountdown(seconds){
-  var el = document.getElementById("cdNum");
-  el.style.display = "";
-  var left = seconds;
-  el.textContent = "" + Math.ceil(left);
-  if(cdTimer) clearInterval(cdTimer);
-  cdTimer = setInterval(function(){
-    left -= 0.1;
-    if(left <= 0){ clearInterval(cdTimer); cdTimer = null; el.style.display = "none"; return; }
-    el.textContent = "" + Math.ceil(left);
-  }, 100);
+// ---------- 跳转倒计时（环形进度 + 大字秒数，随 pendingJump.fireAt 驱动） ----------
+function renderCountdown(){
+  if(!pendingJump) return;
+  var remain = Math.max(0, pendingJump.fireAt - Date.now());
+  var frac = Math.max(0, Math.min(1, remain / AUTO_JUMP_DELAY));
+  document.getElementById("cdNum").textContent = String(Math.ceil(remain / 1000));
+  // 环形进度随剩余时间收缩：满环 → 空环
+  document.getElementById("ringFg").style.strokeDashoffset = (RING_CIRC * (1 - frac)).toFixed(1);
 }
+
+function startCountdown(){
+  var card = document.getElementById("jumpCard");
+  card.hidden = false;
+  document.getElementById("jumpNode").textContent = pendingJump.node.name;
+  document.getElementById("jumpMeta").innerHTML =
+    '延迟 <b>' + results[pendingJump.node.name].lat.toFixed(0) + ' ms</b> · 也可手动选择下方任意节点';
+  renderCountdown();
+  if(cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(renderCountdown, 100);
+}
+
 function hideCountdown(){
-  var el = document.getElementById("cdNum");
-  el.style.display = "none";
+  document.getElementById("jumpCard").hidden = true;
   if(cdTimer){ clearInterval(cdTimer); cdTimer = null; }
 }
 
@@ -451,7 +517,7 @@ function clearTimers(){
   hideCountdown();
 }
 
-// 统一的自动跳转调度：记录触发时间点，供切后台后恢复
+// 统一的自动跳转调度：以触发时间点为准（切后台暂停 / 切回恢复共用同一时间戳）
 function scheduleJump(node, delay){
   clearTimers();
   pendingJump = { node: node, fireAt: Date.now() + delay };
@@ -459,6 +525,28 @@ function scheduleJump(node, delay){
     pendingJump = null;
     jump(node);
   }, delay);
+  if(delay >= 1000) startCountdown(); // 短等待（如缓存直跳）不展示倒计时
+}
+
+// 页面切回前台 / 恢复挂起的自动跳转：跳转定时器与倒计时同步重启
+function resumePendingJump(){
+  if(!pendingJump || locked) return;
+  var remain = pendingJump.fireAt - Date.now();
+  if(remain <= 0){
+    var node = pendingJump.node;
+    pendingJump = null;
+    jump(node);
+    return;
+  }
+  var pj = pendingJump;
+  if(jumpTimer) clearTimeout(jumpTimer);
+  jumpTimer = setTimeout(function(){
+    pendingJump = null;
+    jump(pj.node);
+  }, remain);
+  if(cdTimer) clearInterval(cdTimer);
+  cdTimer = setInterval(renderCountdown, 100);
+  renderCountdown();
 }
 
 // ---------- 主流程 ----------
@@ -476,7 +564,7 @@ async function runTest(){
     setStatus("所有节点均超时，正在重新测速中…（第 " + retryCount + " 次重试）", true);
   }
 
-  // 任意节点 1 秒未响应即停止测速（每个探测在期限前必 resolve）
+  // 任意节点 2 秒未响应即停止测速（每个探测在期限前必 resolve）
   var deadline = Date.now() + RACE_TIMEOUT;
   await Promise.all(NODES.map(function(n){ return testNode(n, deadline); }));
 
@@ -484,12 +572,12 @@ async function runTest(){
   if(okNodes.length){
     okNodes.sort(function(a,b){ return results[a.name].lat - results[b.name].lat; });
     var fastest = okNodes[0];
+    fastestNode = fastest;
     document.getElementById("card-" + fastest.name).classList.add("winner");
     // 解锁所有卡片，允许用户手动点击切换
     document.querySelectorAll(".card.locked").forEach(function(c){ c.classList.remove("locked"); });
     setStatus("已选中最优节点：" + fastest.name + "（" + results[fastest.name].lat.toFixed(0) + "ms）", false);
     saveCache(fastest.name);
-    startCountdown(AUTO_JUMP_DELAY / 1000);
     scheduleJump(fastest, AUTO_JUMP_DELAY);
     retryCount = 0;
   } else {
@@ -513,7 +601,9 @@ function jump(node){
   clearTimers();
   // 保留访问时的路径后缀（如分享链接 /consciousness-China/），跳转到对应平台的文章页
   var base = node.url.replace(/\/+$/, '');
-  var suffix = (location.pathname && location.pathname !== '/') ? location.pathname : '/';
+  var path = location.pathname;
+  if(path === "/index.html") path = "/"; // 网关页自身的路径不参与透传
+  var suffix = path !== "/" ? path : "/";
   location.replace(base + suffix);
 }
 
@@ -549,22 +639,23 @@ renderCards();
   runTest();
 })();
 
-// 页面可见性变化：切走时暂停自动跳转（防止后台跳转）；切回时按剩余时间恢复
+// 手动控制：立即进入最优节点 / 取消自动跳转
+document.getElementById("jumpNow").addEventListener("click", function(){
+  if(pendingJump) jump(pendingJump.node);
+  else if(fastestNode) jump(fastestNode);
+});
+document.getElementById("jumpCancel").addEventListener("click", function(){
+  clearTimers();
+  setStatus("已取消自动跳转，可从下方手动选择节点", false);
+});
+
+// 页面可见性变化：切走时暂停自动跳转与倒计时（防止后台跳转）；切回时按同一时间戳恢复
 document.addEventListener("visibilitychange", function(){
   if(document.hidden){
     if(jumpTimer){ clearTimeout(jumpTimer); jumpTimer = null; } // pendingJump 保留用于恢复
-  } else if(pendingJump && !locked){
-    var pj = pendingJump;
-    var remain = pj.fireAt - Date.now();
-    if(remain <= 0){
-      pendingJump = null;
-      jump(pj.node);
-    } else {
-      jumpTimer = setTimeout(function(){
-        pendingJump = null;
-        jump(pj.node);
-      }, remain);
-    }
+    if(cdTimer){ clearInterval(cdTimer); cdTimer = null; }
+  } else {
+    resumePendingJump();
   }
 });
 </script>
