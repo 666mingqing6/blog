@@ -51,8 +51,9 @@
   .wrap{position:relative;z-index:1;width:100%;max-width:940px}
   a{color:inherit;text-decoration:none}
 
-  /* ---------- 头部 ---------- */
-  header{text-align:center;margin-bottom:44px}
+  /* ---------- 头部（紧凑，视线聚焦节点卡片） ---------- */
+  header{text-align:center;margin-bottom:22px}
+  .brand{display:none}
   .brand{
     width:58px;height:58px;border-radius:18px;margin:0 auto 22px;
     display:flex;align-items:center;justify-content:center;position:relative;
@@ -67,10 +68,10 @@
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
     -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
   h1{
-    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,5vw,42px);
-    letter-spacing:-0.03em;line-height:1.08;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(21px,3.2vw,27px);
+    letter-spacing:-0.02em;line-height:1.2;
   }
-  .sub{color:var(--muted);margin-top:14px;font-size:clamp(13.5px,2vw,15px);line-height:1.7;max-width:480px;margin-inline:auto;font-weight:400}
+  .sub{color:var(--muted);margin-top:7px;font-size:12.5px;line-height:1.6;font-weight:400}
 
   /* ---------- 状态栏 ---------- */
   .statusbar{
@@ -284,11 +285,8 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="16" width="6" height="6" rx="1.5"/><rect x="2" y="16" width="6" height="6" rx="1.5"/><rect x="9" y="2" width="6" height="6" rx="1.5"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
-    </div>
-    <h1>选择最优节点</h1>
-    <p class="sub">正在探测各平台在你的本地网络下的真实延迟，自动为你选出一条最快的线路。</p>
+    <h1>选择节点</h1>
+    <p class="sub">自动测速，跳转到最快线路</p>
   </header>
 
   <div class="statusbar" id="statusbar">
@@ -646,16 +644,30 @@ async function runTest(){
   }
 }
 
+// 跨子域共享 Cookie：所有 *.646474.xyz 节点都能读到"已选择"状态，
+// 避免跳转后目标节点再次触发测速，造成无限循环。
+function writeSharedCookie(name, value, days){
+  var host = location.hostname;
+  var domain = /(^|\.)646474\.xyz$/.test(host) ? "; Domain=.646474.xyz" : "";
+  document.cookie = name + "=" + encodeURIComponent(value) + domain +
+    "; Path=/; SameSite=Lax; Max-Age=" + Math.round(days * 86400);
+}
+
 function jump(node){
   if(locked) return;
   locked = true;
   clearTimers();
+  // 先落 Cookie，再跳转：目标节点同域即可读到，不会重复测速
+  writeSharedCookie("blog_node", node.name, 7);
   // 保留访问时的路径后缀（如分享链接 /consciousness-China/），跳转到对应平台的文章页
   var base = node.url.replace(/\/+$/, '');
   var path = location.pathname;
   if(path === "/index.html") path = "/"; // 网关页自身的路径不参与透传
   var suffix = path !== "/" ? path : "/";
-  location.replace(base + suffix);
+  var target = base + suffix + location.search;
+  // 附加 via 参数：Cookie 不可用（隐私模式等）时的兜底，目标节点据此跳过测速
+  target += (target.indexOf("?") >= 0 ? "&" : "?") + "via=" + encodeURIComponent(node.name);
+  location.replace(target);
 }
 
 // ---------- 缓存 ----------
